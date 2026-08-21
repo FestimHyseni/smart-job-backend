@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ApplicationStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -47,5 +48,20 @@ class Application extends Model
     public function interviews(): HasMany
     {
         return $this->hasMany(Interview::class);
+    }
+
+    public function scopeStatus(Builder $query, ApplicationStatus $status): Builder
+    {
+        return $query->where('status', $status);
+    }
+
+    public function scopePending(Builder $query): Builder
+    {
+        return $query->where('status', ApplicationStatus::Pending);
+    }
+
+    public function scopeAccepted(Builder $query): Builder
+    {
+        return $query->where('status', ApplicationStatus::Accepted);
     }
 }

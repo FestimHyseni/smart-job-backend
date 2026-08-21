@@ -5,9 +5,11 @@ namespace App\Models;
 use App\Enums\EmploymentType;
 use App\Enums\ExperienceLevel;
 use App\Enums\JobStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Job extends Model
@@ -85,5 +87,33 @@ class Job extends Model
     public function aiJobRecommendations(): HasMany
     {
         return $this->hasMany(AiJobRecommendation::class);
+    }
+
+    public function skills(): BelongsToMany
+    {
+        return $this->belongsToMany(Skill::class, 'job_skills')
+            ->withPivot('importance')
+            ->withTimestamps();
+    }
+
+    public function savedByCandidates(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'saved_jobs')
+            ->withPivot('created_at');
+    }
+
+    public function scopePublished(Builder $query): Builder
+    {
+        return $query->where('status', JobStatus::Published);
+    }
+
+    public function scopeInLocation(Builder $query, int $locationId): Builder
+    {
+        return $query->where('location_id', $locationId);
+    }
+
+    public function scopeOfEmploymentType(Builder $query, EmploymentType $type): Builder
+    {
+        return $query->where('employment_type', $type);
     }
 }

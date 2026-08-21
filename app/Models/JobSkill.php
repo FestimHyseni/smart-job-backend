@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\SkillImportance;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -32,5 +33,10 @@ class JobSkill extends Model
     public function skill(): BelongsTo
     {
         return $this->belongsTo(Skill::class);
+    }
+
+    public function scopeRequired(Builder $query): Builder
+    {
+        return $query->where('importance', SkillImportance::Required);
     }
 }

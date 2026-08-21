@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\SkillLevel;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -34,5 +35,10 @@ class CandidateSkill extends Model
     public function skill(): BelongsTo
     {
         return $this->belongsTo(Skill::class);
+    }
+
+    public function scopeVerified(Builder $query): Builder
+    {
+        return $query->where('verified', true);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\InterviewStatus;
 use App\Enums\InterviewType;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -34,5 +35,16 @@ class Interview extends Model
     public function application(): BelongsTo
     {
         return $this->belongsTo(Application::class);
+    }
+
+    public function scopeUpcoming(Builder $query): Builder
+    {
+        return $query->where('status', InterviewStatus::Scheduled)
+            ->where('scheduled_at', '>=', now());
+    }
+
+    public function scopeStatus(Builder $query, InterviewStatus $status): Builder
+    {
+        return $query->where('status', $status);
     }
 }

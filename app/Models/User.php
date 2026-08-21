@@ -5,7 +5,9 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Enums\UserRole;
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -112,5 +114,46 @@ class User extends Authenticatable
     public function aiJobRecommendations(): HasMany
     {
         return $this->hasMany(AiJobRecommendation::class);
+    }
+
+    public function companies(): BelongsToMany
+    {
+        return $this->belongsToMany(Company::class, 'company_user')
+            ->withPivot('role')
+            ->withTimestamps();
+    }
+
+    public function skills(): BelongsToMany
+    {
+        return $this->belongsToMany(Skill::class, 'candidate_skills')
+            ->withPivot('level', 'verified')
+            ->withTimestamps();
+    }
+
+    public function savedJobPostings(): BelongsToMany
+    {
+        return $this->belongsToMany(Job::class, 'saved_jobs')
+            ->withPivot('created_at');
+    }
+
+    public function conversations(): BelongsToMany
+    {
+        return $this->belongsToMany(Conversation::class, 'conversation_participants')
+            ->withPivot('created_at');
+    }
+
+    public function scopeAdmins(Builder $query): Builder
+    {
+        return $query->where('role', UserRole::Admin);
+    }
+
+    public function scopeEmployers(Builder $query): Builder
+    {
+        return $query->where('role', UserRole::Employer);
+    }
+
+    public function scopeCandidates(Builder $query): Builder
+    {
+        return $query->where('role', UserRole::Candidate);
     }
 }
