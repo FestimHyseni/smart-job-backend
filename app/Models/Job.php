@@ -92,6 +92,7 @@ class Job extends Model
     public function skills(): BelongsToMany
     {
         return $this->belongsToMany(Skill::class, 'job_skills')
+            ->as('job_skill')
             ->withPivot('importance')
             ->withTimestamps();
     }

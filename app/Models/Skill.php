@@ -28,6 +28,7 @@ class Skill extends Model
     public function jobs(): BelongsToMany
     {
         return $this->belongsToMany(Job::class, 'job_skills')
+            ->as('job_skill')
             ->withPivot('importance')
             ->withTimestamps();
     }
@@ -35,6 +36,7 @@ class Skill extends Model
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'candidate_skills')
+            ->as('candidate_skill')
             ->withPivot('level', 'verified')
             ->withTimestamps();
     }
