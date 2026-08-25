@@ -23,6 +23,7 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ResumeController;
 use App\Http\Controllers\Api\SavedJobController;
 use App\Http\Controllers\Api\SkillController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
@@ -71,4 +72,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('messages', MessageController::class);
     Route::apiResource('interviews', InterviewController::class);
     Route::apiResource('ai-job-recommendations', AiJobRecommendationController::class);
+
+    Route::middleware('admin')->group(function () {
+        Route::apiResource('users', UserController::class)->except(['destroy']);
+    });
 });
