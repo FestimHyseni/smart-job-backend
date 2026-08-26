@@ -23,13 +23,17 @@ class ApplicationSubmitted extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         $job = $this->application->job;
-        $companyName = $job->company->name;
+        $location = $job->location ? "{$job->location->city}, {$job->location->country}" : null;
 
         return (new MailMessage)
-            ->subject("Your application for {$job->title} was submitted")
-            ->greeting("Hi {$notifiable->name},")
-            ->line("Your application for **{$job->title}** at **{$companyName}** has been submitted successfully.")
-            ->line('The employer will review your application and get back to you.')
-            ->line('Good luck!');
+            ->subject("Aplikimi juaj për {$job->title} u dërgua me sukses")
+            ->view('mail.application-submitted', [
+                'candidateName' => $notifiable->name,
+                'jobTitle' => $job->title,
+                'companyName' => $job->company->name,
+                'location' => $location,
+                'appliedAt' => $this->application->applied_at->translatedFormat('d M Y, H:i'),
+                'jobUrl' => rtrim(config('app.frontend_url'), '/')."/jobs/{$job->id}",
+            ]);
     }
 }
