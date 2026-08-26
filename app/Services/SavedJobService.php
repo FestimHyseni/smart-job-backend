@@ -8,5 +8,5 @@ class SavedJobService extends BaseCrudService
 {
     protected string $model = SavedJob::class;
 
-    protected array $with = ['user', 'job'];
+    protected array $with = ['user', 'job.company', 'job.location'];
 }
