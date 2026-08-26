@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Application;
+use App\Notifications\ApplicationSubmitted;
 
 class ApplicationService extends BaseCrudService
 {
@@ -14,6 +15,10 @@ class ApplicationService extends BaseCrudService
     {
         $data['applied_at'] = now();
 
-        return parent::create($data);
+        $application = parent::create($data);
+
+        $application->candidate->notify(new ApplicationSubmitted($application));
+
+        return $application;
     }
 }
