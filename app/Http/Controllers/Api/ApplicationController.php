@@ -9,6 +9,7 @@ use App\Http\Resources\ApplicationResource;
 use App\Models\Application;
 use App\Services\ApplicationService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class ApplicationController extends Controller
 {
@@ -16,9 +17,16 @@ class ApplicationController extends Controller
     {
     }
 
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        return $this->success(ApplicationResource::collection($this->service->paginate()));
+        $perPage = (int) $request->input('per_page', 15);
+
+        $applications = $this->service->search(
+            $request->only(['candidate_id', 'job_id', 'status']),
+            $perPage
+        );
+
+        return $this->success(ApplicationResource::collection($applications));
     }
 
     public function store(StoreApplicationRequest $request): JsonResponse
