@@ -3,7 +3,9 @@
 namespace App\Services;
 
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class AuthService
@@ -41,5 +43,17 @@ class AuthService
     public function logout(User $user): void
     {
         $user->currentAccessToken()->delete();
+    }
+
+    public function updateAvatar(User $user, UploadedFile $file): User
+    {
+        if ($user->avatar) {
+            Storage::disk('public')->delete($user->avatar);
+        }
+
+        $user->avatar = $file->store('avatars', 'public');
+        $user->save();
+
+        return $user;
     }
 }

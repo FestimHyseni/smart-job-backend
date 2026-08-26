@@ -92,6 +92,11 @@ class User extends Authenticatable
         return $this->hasMany(Experience::class);
     }
 
+    public function candidateLanguages(): HasMany
+    {
+        return $this->hasMany(CandidateLanguage::class);
+    }
+
     public function savedJobs(): HasMany
     {
         return $this->hasMany(SavedJob::class);

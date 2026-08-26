@@ -4,21 +4,19 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Storage;
 
-class UserResource extends JsonResource
+class CandidateLanguageResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
+            'user_id' => $this->user_id,
             'name' => $this->name,
-            'email' => $this->email,
-            'role' => $this->role,
-            'phone' => $this->phone,
-            'avatar' => $this->avatar,
-            'avatar_url' => $this->avatar ? Storage::url($this->avatar) : null,
-            'email_verified_at' => $this->email_verified_at,
+            'speaking' => $this->speaking,
+            'writing' => $this->writing,
+            'listening' => $this->listening,
+            'understanding' => $this->understanding,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

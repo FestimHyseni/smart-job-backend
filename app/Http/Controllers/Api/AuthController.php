@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Requests\Auth\UpdateAvatarRequest;
 use App\Http\Resources\UserResource;
 use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
@@ -46,5 +47,12 @@ class AuthController extends Controller
     public function me(Request $request): JsonResponse
     {
         return $this->success(new UserResource($request->user()), 'OK');
+    }
+
+    public function updateAvatar(UpdateAvatarRequest $request): JsonResponse
+    {
+        $user = $this->authService->updateAvatar($request->user(), $request->file('avatar'));
+
+        return $this->success(new UserResource($user), 'Avatar updated successfully.');
     }
 }

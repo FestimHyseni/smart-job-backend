@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AiJobRecommendationController;
 use App\Http\Controllers\Api\ApplicationController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CandidateLanguageController;
 use App\Http\Controllers\Api\CandidateProfileController;
 use App\Http\Controllers\Api\CandidateSkillController;
 use App\Http\Controllers\Api\CompanyController;
@@ -33,6 +34,7 @@ Route::prefix('auth')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('logout', [AuthController::class, 'logout']);
         Route::get('me', [AuthController::class, 'me']);
+        Route::post('avatar', [AuthController::class, 'updateAvatar']);
     });
 });
 
@@ -59,6 +61,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('candidate-profiles', CandidateProfileController::class);
     Route::apiResource('job-skills', JobSkillController::class);
     Route::apiResource('candidate-skills', CandidateSkillController::class);
+    Route::apiResource('candidate-languages', CandidateLanguageController::class);
     Route::apiResource('resumes', ResumeController::class);
     Route::apiResource('applications', ApplicationController::class);
     Route::apiResource('educations', EducationController::class);
