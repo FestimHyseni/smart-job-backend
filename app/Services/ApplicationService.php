@@ -14,7 +14,7 @@ class ApplicationService extends BaseCrudService
 {
     protected string $model = Application::class;
 
-    protected array $with = ['job', 'candidate', 'resume'];
+    protected array $with = ['job.company', 'job.location', 'candidate', 'resume'];
 
     public function create(array $data): Application
     {
