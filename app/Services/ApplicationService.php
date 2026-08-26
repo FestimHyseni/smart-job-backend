@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\Application;
 use App\Notifications\ApplicationSubmitted;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class ApplicationService extends BaseCrudService
 {
@@ -17,7 +19,14 @@ class ApplicationService extends BaseCrudService
 
         $application = parent::create($data);
 
-        $application->candidate->notify(new ApplicationSubmitted($application));
+        try {
+            $application->candidate->notify(new ApplicationSubmitted($application));
+        } catch (Throwable $e) {
+            Log::error('Failed to send application confirmation email.', [
+                'application_id' => $application->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         return $application;
     }
