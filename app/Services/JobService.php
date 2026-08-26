@@ -18,6 +18,7 @@ class JobService extends BaseCrudService
 
         $query->when($filters['status'] ?? null, fn ($q, $status) => $q->where('status', $status))
             ->when(! isset($filters['status']), fn ($q) => $q->where('status', JobStatus::Published))
+            ->when($filters['company_id'] ?? null, fn ($q, $companyId) => $q->where('company_id', $companyId))
             ->when($filters['category_id'] ?? null, fn ($q, $categoryId) => $q->where('category_id', $categoryId))
             ->when($filters['location_id'] ?? null, fn ($q, $locationId) => $q->where('location_id', $locationId))
             ->when($filters['employment_type'] ?? null, fn ($q, $type) => $q->where('employment_type', $type))

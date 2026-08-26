@@ -20,7 +20,7 @@ class JobController extends Controller
     public function index(Request $request): JsonResponse
     {
         $jobs = $this->service->search($request->only([
-            'status', 'category_id', 'location_id', 'employment_type', 'experience_level', 'search', 'sort',
+            'status', 'category_id', 'location_id', 'employment_type', 'experience_level', 'search', 'sort', 'company_id',
         ]));
 
         return $this->success(JobResource::collection($jobs));
