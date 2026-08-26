@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Application\FilterApplicationsRequest;
 use App\Http\Requests\Application\StoreApplicationRequest;
 use App\Http\Requests\Application\UpdateApplicationRequest;
 use App\Http\Resources\ApplicationResource;
 use App\Models\Application;
 use App\Services\ApplicationService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class ApplicationController extends Controller
 {
@@ -17,14 +17,12 @@ class ApplicationController extends Controller
     {
     }
 
-    public function index(Request $request): JsonResponse
+    public function index(FilterApplicationsRequest $request): JsonResponse
     {
-        $perPage = (int) $request->input('per_page', 15);
+        $filters = $request->validated();
+        $perPage = (int) ($filters['per_page'] ?? 15);
 
-        $applications = $this->service->search(
-            $request->only(['candidate_id', 'job_id', 'status']),
-            $perPage
-        );
+        $applications = $this->service->search($filters, $perPage);
 
         return $this->success(ApplicationResource::collection($applications));
     }
