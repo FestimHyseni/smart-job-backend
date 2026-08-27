@@ -29,7 +29,7 @@ class ConversationController extends Controller
 
     public function show(Conversation $conversation): JsonResponse
     {
-        return $this->success(new ConversationResource($conversation->load(['users', 'messages'])));
+        return $this->success(new ConversationResource($conversation->load(['users', 'messages.sender'])));
     }
 
     public function destroy(Conversation $conversation): JsonResponse

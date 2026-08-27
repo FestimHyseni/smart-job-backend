@@ -8,7 +8,7 @@ class ConversationService extends BaseCrudService
 {
     protected string $model = Conversation::class;
 
-    protected array $with = ['users', 'messages'];
+    protected array $with = ['users', 'messages.sender'];
 
     public function createWithParticipants(array $participantIds): Conversation
     {
