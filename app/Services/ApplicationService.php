@@ -3,8 +3,10 @@
 namespace App\Services;
 
 use App\Models\Application;
+use App\Models\CompanyUser;
 use App\Notifications\ApplicationStatusUpdated;
 use App\Notifications\ApplicationSubmitted;
+use App\Notifications\NewApplicationReceived;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
@@ -23,6 +25,7 @@ class ApplicationService extends BaseCrudService
         $application = parent::create($data);
 
         $this->notifySafely($application, new ApplicationSubmitted($application), 'Failed to send application confirmation email.');
+        $this->notifyEmployers($application);
 
         return $application;
     }
@@ -61,6 +64,24 @@ class ApplicationService extends BaseCrudService
                 'application_id' => $application->id,
                 'error' => $e->getMessage(),
             ]);
+        }
+    }
+
+    private function notifyEmployers(Application $application): void
+    {
+        $companyId = $application->job->company_id;
+        $employers = CompanyUser::with('user')->where('company_id', $companyId)->get()->pluck('user')->filter();
+
+        foreach ($employers as $employer) {
+            try {
+                $employer->notify(new NewApplicationReceived($application));
+            } catch (Throwable $e) {
+                Log::error('Failed to send new application email to employer.', [
+                    'application_id' => $application->id,
+                    'employer_id' => $employer->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
     }
 }
