@@ -30,7 +30,9 @@ class InterviewController extends Controller
 
     public function show(Interview $interview): JsonResponse
     {
-        return $this->success(new InterviewResource($interview->load('application')));
+        return $this->success(new InterviewResource($interview->load([
+            'application.job.company', 'application.job.location', 'application.candidate', 'application.resume',
+        ])));
     }
 
     public function update(UpdateInterviewRequest $request, Interview $interview): JsonResponse
