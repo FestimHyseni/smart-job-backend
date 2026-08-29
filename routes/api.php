@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AiJobRecommendationController;
 use App\Http\Controllers\Api\ApplicationController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CandidateController;
 use App\Http\Controllers\Api\CandidateLanguageController;
 use App\Http\Controllers\Api\CandidateProfileController;
 use App\Http\Controllers\Api\CandidateSkillController;
@@ -52,6 +53,7 @@ Route::get('locations/{location}', [LocationController::class, 'show']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('jobs/{job}/view-stats', [JobController::class, 'viewStats']);
+    Route::get('candidates/{user}', [CandidateController::class, 'show']);
     Route::apiResource('jobs', JobController::class)->except(['index', 'show']);
     Route::apiResource('job-categories', JobCategoryController::class)->except(['index', 'show']);
     Route::apiResource('skills', SkillController::class)->except(['index', 'show']);
