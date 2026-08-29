@@ -9,6 +9,7 @@ use App\Http\Resources\NotificationResource;
 use App\Models\Notification;
 use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class NotificationController extends Controller
 {
@@ -16,9 +17,11 @@ class NotificationController extends Controller
     {
     }
 
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        return $this->success(NotificationResource::collection($this->service->paginate()));
+        $perPage = min((int) $request->integer('per_page', 15), 100);
+
+        return $this->success(NotificationResource::collection($this->service->paginate($perPage)));
     }
 
     public function store(StoreNotificationRequest $request): JsonResponse

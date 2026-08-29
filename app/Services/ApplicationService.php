@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\NotificationType;
 use App\Models\Application;
 use App\Models\CompanyUser;
 use App\Notifications\ApplicationStatusUpdated;
@@ -18,6 +19,10 @@ class ApplicationService extends BaseCrudService
 
     protected array $with = ['job.company', 'job.location', 'candidate', 'resume', 'interviews'];
 
+    public function __construct(private readonly NotificationService $notificationService)
+    {
+    }
+
     public function create(array $data): Application
     {
         $data['applied_at'] = now();
@@ -25,6 +30,12 @@ class ApplicationService extends BaseCrudService
         $application = parent::create($data);
 
         $this->notifySafely($application, new ApplicationSubmitted($application), 'Failed to send application confirmation email.');
+        $this->notificationService->notify(
+            $application->candidate_id,
+            NotificationType::ApplicationSubmitted,
+            'Aplikimi u dërgua',
+            "Aplikimi yt për \"{$application->job->title}\" u dërgua me sukses.",
+        );
         $this->notifyEmployers($application);
 
         return $application;
@@ -39,6 +50,12 @@ class ApplicationService extends BaseCrudService
 
         if (isset($data['status']) && $application->status !== $previousStatus) {
             $this->notifySafely($application, new ApplicationStatusUpdated($application), 'Failed to send application status update email.');
+            $this->notificationService->notify(
+                $application->candidate_id,
+                NotificationType::ApplicationStatusUpdated,
+                'Statusi i aplikimit u ndryshua',
+                "Statusi i aplikimit tënd për \"{$application->job->title}\" tani është \"{$application->status->value}\".",
+            );
         }
 
         return $application;
@@ -82,6 +99,13 @@ class ApplicationService extends BaseCrudService
                     'error' => $e->getMessage(),
                 ]);
             }
+
+            $this->notificationService->notify(
+                $employer->id,
+                NotificationType::NewApplicationReceived,
+                'Aplikim i ri',
+                "{$application->candidate->name} aplikoi për \"{$application->job->title}\".",
+            );
         }
     }
 }

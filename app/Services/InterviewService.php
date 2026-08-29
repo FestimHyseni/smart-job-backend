@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\NotificationType;
 use App\Models\Interview;
 use App\Notifications\InterviewScheduled;
 use Illuminate\Support\Facades\Log;
@@ -12,6 +13,10 @@ class InterviewService extends BaseCrudService
     protected string $model = Interview::class;
 
     protected array $with = ['application.job.company', 'application.job.location', 'application.candidate', 'application.resume'];
+
+    public function __construct(private readonly NotificationService $notificationService)
+    {
+    }
 
     public function create(array $data): Interview
     {
@@ -26,6 +31,13 @@ class InterviewService extends BaseCrudService
                 'error' => $e->getMessage(),
             ]);
         }
+
+        $this->notificationService->notify(
+            $interview->application->candidate_id,
+            NotificationType::InterviewScheduled,
+            'Intervistë e caktuar',
+            "U caktua një intervistë për \"{$interview->application->job->title}\".",
+        );
 
         return $interview;
     }
