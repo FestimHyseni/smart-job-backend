@@ -18,6 +18,8 @@ class Application extends Model
         'candidate_id',
         'resume_id',
         'cover_letter',
+        'experience_summary',
+        'languages',
         'status',
         'applied_at',
     ];

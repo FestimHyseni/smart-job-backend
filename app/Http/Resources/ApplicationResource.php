@@ -18,6 +18,8 @@ class ApplicationResource extends JsonResource
             'resume_id' => $this->resume_id,
             'resume' => new ResumeResource($this->whenLoaded('resume')),
             'cover_letter' => $this->cover_letter,
+            'experience_summary' => $this->experience_summary,
+            'languages' => $this->languages,
             'status' => $this->status,
             'applied_at' => $this->applied_at,
             'interviews' => InterviewResource::collection($this->whenLoaded('interviews')),

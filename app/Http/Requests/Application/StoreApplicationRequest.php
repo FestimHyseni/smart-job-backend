@@ -24,6 +24,8 @@ class StoreApplicationRequest extends FormRequest
             'candidate_id' => ['required', 'integer', 'exists:users,id'],
             'resume_id' => ['required', 'integer', 'exists:resumes,id'],
             'cover_letter' => ['nullable', 'string'],
+            'experience_summary' => ['nullable', 'string'],
+            'languages' => ['nullable', 'string', 'max:255'],
         ];
     }
 }
