@@ -19,4 +19,26 @@ class JobViewService extends BaseCrudService
             'viewed_at' => now(),
         ]);
     }
+
+    public function statsForJob(int $jobId, int $days = 14): array
+    {
+        $since = now()->subDays($days - 1)->startOfDay();
+
+        $countsByDate = JobView::where('job_id', $jobId)
+            ->where('viewed_at', '>=', $since)
+            ->selectRaw('DATE(viewed_at) as date, COUNT(*) as count')
+            ->groupBy('date')
+            ->pluck('count', 'date');
+
+        $daily = [];
+        for ($i = $days - 1; $i >= 0; $i--) {
+            $date = now()->subDays($i)->toDateString();
+            $daily[] = ['date' => $date, 'count' => (int) ($countsByDate[$date] ?? 0)];
+        }
+
+        return [
+            'total' => JobView::where('job_id', $jobId)->count(),
+            'daily' => $daily,
+        ];
+    }
 }

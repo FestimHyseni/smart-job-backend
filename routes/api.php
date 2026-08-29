@@ -51,6 +51,7 @@ Route::get('locations', [LocationController::class, 'index']);
 Route::get('locations/{location}', [LocationController::class, 'show']);
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('jobs/{job}/view-stats', [JobController::class, 'viewStats']);
     Route::apiResource('jobs', JobController::class)->except(['index', 'show']);
     Route::apiResource('job-categories', JobCategoryController::class)->except(['index', 'show']);
     Route::apiResource('skills', SkillController::class)->except(['index', 'show']);

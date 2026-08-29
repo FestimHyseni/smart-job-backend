@@ -8,13 +8,16 @@ use App\Http\Requests\Job\UpdateJobRequest;
 use App\Http\Resources\JobResource;
 use App\Models\Job;
 use App\Services\JobService;
+use App\Services\JobViewService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class JobController extends Controller
 {
-    public function __construct(private readonly JobService $service)
-    {
+    public function __construct(
+        private readonly JobService $service,
+        private readonly JobViewService $jobViewService,
+    ) {
     }
 
     public function index(Request $request): JsonResponse
@@ -33,9 +36,25 @@ class JobController extends Controller
         return $this->success(new JobResource($job), 'Job created successfully.', 201);
     }
 
-    public function show(Job $job): JsonResponse
+    public function show(Request $request, Job $job): JsonResponse
     {
-        return $this->success(new JobResource($job->load(['company', 'category', 'location', 'skills'])));
+        $job->load(['company', 'category', 'location', 'skills']);
+
+        $viewerId = $request->user('sanctum')?->id;
+        $isOwnJob = $viewerId && $job->company->users()->where('user_id', $viewerId)->exists();
+        if (! $isOwnJob) {
+            $this->jobViewService->record($job->id, $viewerId, $request->ip());
+        }
+
+        return $this->success(new JobResource($job));
+    }
+
+    public function viewStats(Request $request, Job $job): JsonResponse
+    {
+        $isOwnJob = $job->company->users()->where('user_id', $request->user()->id)->exists();
+        abort_unless($isOwnJob, 403);
+
+        return $this->success($this->jobViewService->statsForJob($job->id));
     }
 
     public function update(UpdateJobRequest $request, Job $job): JsonResponse
