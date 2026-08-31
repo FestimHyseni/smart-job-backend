@@ -53,12 +53,36 @@ class CvRecommendationService
         }
     }
 
+    /**
+     * Whole-word (or whole-token) substring match, so short names like "Git"
+     * don't false-positive inside unrelated words like "digital" or "legit".
+     */
+    private function containsTerm(string $haystack, string $needle): bool
+    {
+        $pattern = '/(?<![a-z0-9])'.preg_quote($needle, '/').'(?![a-z0-9])/iu';
+
+        return preg_match($pattern, $haystack) === 1;
+    }
+
+    /**
+     * Inserts spaces at camelCase boundaries ("ReactJs" -> "React Js") so
+     * compound tokens common in CVs don't defeat the whole-word matcher.
+     */
+    private function normalize(string $text): string
+    {
+        return mb_strtolower(preg_replace('/(?<=[a-z0-9])(?=[A-Z])/', ' ', $text));
+    }
+
     public function matchedSkills(string $cvText): Collection
     {
-        $normalized = mb_strtolower($cvText);
+        $normalized = $this->normalize($cvText);
+
+        if ($normalized === '') {
+            return collect();
+        }
 
         return Skill::all()->filter(
-            fn (Skill $skill) => $normalized !== '' && str_contains($normalized, mb_strtolower($skill->name))
+            fn (Skill $skill) => $this->containsTerm($normalized, $this->normalize($skill->name))
         )->values();
     }
 
@@ -68,21 +92,18 @@ class CvRecommendationService
     public function recommend(string $cvText, int $limit = 10): array
     {
         $matchedSkills = $this->matchedSkills($cvText);
-        $matchedIds = $matchedSkills->pluck('id')->all();
+        $matchedNames = $matchedSkills->pluck('name')->map(fn (string $name) => $this->normalize($name));
 
-        if (empty($matchedIds)) {
+        if ($matchedNames->isEmpty()) {
             return ['matched_skills' => [], 'jobs' => []];
         }
 
         $jobs = Job::published()
             ->with(['company', 'category', 'location', 'skills'])
             ->get()
-            ->map(function (Job $job) use ($matchedIds) {
-                $requiredIds = $job->skills->filter(fn (Skill $s) => $s->job_skill->importance === 'required')->pluck('id')->all();
-                $preferredIds = $job->skills->filter(fn (Skill $s) => $s->job_skill->importance === 'preferred')->pluck('id')->all();
-
-                $score = count(array_intersect($requiredIds, $matchedIds)) * 2
-                    + count(array_intersect($preferredIds, $matchedIds));
+            ->map(function (Job $job) use ($matchedNames) {
+                $jobText = $this->normalize($job->title.' '.$job->description.' '.($job->requirements ?? ''));
+                $score = $matchedNames->filter(fn (string $name) => $this->containsTerm($jobText, $name))->count();
 
                 return ['job' => $job, 'score' => $score];
             })
