@@ -31,7 +31,7 @@ class AuthService
 
         if (! $user || ! Hash::check($credentials['password'], $user->password)) {
             throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
+                'email' => ['Të dhënat e dhëna janë të pasakta.'],
             ]);
         }
 

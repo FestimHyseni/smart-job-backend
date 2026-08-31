@@ -26,7 +26,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*')) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Validation failed.',
+                    'message' => 'Të dhënat nuk janë të vlefshme.',
                     'errors' => $e->errors(),
                 ], 422);
             }
@@ -36,7 +36,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*')) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Unauthenticated.',
+                    'message' => 'Ju lutemi identifikohuni.',
                     'errors' => null,
                 ], 401);
             }
@@ -46,7 +46,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*')) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Resource not found.',
+                    'message' => 'Nuk u gjet.',
                     'errors' => null,
                 ], 404);
             }
@@ -56,7 +56,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*')) {
                 return response()->json([
                     'success' => false,
-                    'message' => $e->getMessage() ?: 'An error occurred.',
+                    'message' => $e->getMessage() ?: 'Ndodhi një gabim.',
                     'errors' => null,
                 ], $e->getStatusCode());
             }
