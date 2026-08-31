@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\UserRole;
 use App\Models\Application;
+use App\Models\Resume;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
@@ -43,7 +44,10 @@ class GuestApplicationService
             ]);
         }
 
-        $resume = $this->resumeService->store($user->id, $resumeFile, true);
+        $resume = Resume::where('user_id', $user->id)
+            ->where('file_name', $resumeFile->getClientOriginalName())
+            ->first()
+            ?? $this->resumeService->store($user->id, $resumeFile, true);
 
         return $this->applicationService->create([
             'job_id' => $data['job_id'],

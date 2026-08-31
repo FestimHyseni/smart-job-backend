@@ -27,7 +27,7 @@ class StoreResumeRequest extends FormRequest
                         ->exists();
 
                     if ($alreadyUploaded) {
-                        $fail('You have already uploaded a document with this name.');
+                        $fail('Ke ngarkuar tashmë një dokument me këtë emër.');
                     }
                 },
             ],
