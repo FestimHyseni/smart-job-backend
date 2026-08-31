@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\CandidateLanguageController;
 use App\Http\Controllers\Api\CandidateProfileController;
 use App\Http\Controllers\Api\CandidateSkillController;
 use App\Http\Controllers\Api\CompanyController;
+use App\Http\Controllers\Api\CvRecommendationController;
 use App\Http\Controllers\Api\CompanyUserController;
 use App\Http\Controllers\Api\ConversationController;
 use App\Http\Controllers\Api\ConversationParticipantController;
@@ -52,6 +53,7 @@ Route::get('companies/{company}', [CompanyController::class, 'show']);
 Route::get('locations', [LocationController::class, 'index']);
 Route::get('locations/{location}', [LocationController::class, 'show']);
 Route::post('guest-applications', [GuestApplicationController::class, 'store']);
+Route::post('cv-recommendations', [CvRecommendationController::class, 'store']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('jobs/{job}/view-stats', [JobController::class, 'viewStats']);
