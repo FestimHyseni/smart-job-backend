@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\ConversationController;
 use App\Http\Controllers\Api\ConversationParticipantController;
 use App\Http\Controllers\Api\EducationController;
 use App\Http\Controllers\Api\ExperienceController;
+use App\Http\Controllers\Api\GuestApplicationController;
 use App\Http\Controllers\Api\InterviewController;
 use App\Http\Controllers\Api\JobCategoryController;
 use App\Http\Controllers\Api\JobController;
@@ -50,6 +51,7 @@ Route::get('companies', [CompanyController::class, 'index']);
 Route::get('companies/{company}', [CompanyController::class, 'show']);
 Route::get('locations', [LocationController::class, 'index']);
 Route::get('locations/{location}', [LocationController::class, 'show']);
+Route::post('guest-applications', [GuestApplicationController::class, 'store']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('jobs/{job}/view-stats', [JobController::class, 'viewStats']);
