@@ -9,6 +9,7 @@ use App\Http\Resources\JobSkillResource;
 use App\Models\JobSkill;
 use App\Services\JobSkillService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class JobSkillController extends Controller
 {
@@ -16,9 +17,11 @@ class JobSkillController extends Controller
     {
     }
 
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        return $this->success(JobSkillResource::collection($this->service->paginate()));
+        $perPage = min((int) $request->integer('per_page', 15), 200);
+
+        return $this->success(JobSkillResource::collection($this->service->paginate($perPage)));
     }
 
     public function store(StoreJobSkillRequest $request): JsonResponse
