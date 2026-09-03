@@ -9,6 +9,7 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -38,5 +39,16 @@ class UserController extends Controller
         $user = $this->service->update($user, $request->validated());
 
         return $this->success(new UserResource($user), 'User updated successfully.');
+    }
+
+    public function destroy(Request $request, User $user): JsonResponse
+    {
+        if ($request->user()->id === $user->id) {
+            return $this->error('You cannot delete your own account.', null, 422);
+        }
+
+        $this->service->delete($user);
+
+        return $this->success(null, 'User deleted successfully.');
     }
 }

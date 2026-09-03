@@ -84,6 +84,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('ai-job-recommendations', AiJobRecommendationController::class);
 
     Route::middleware('admin')->group(function () {
-        Route::apiResource('users', UserController::class)->except(['destroy']);
+        Route::apiResource('users', UserController::class);
     });
 });
