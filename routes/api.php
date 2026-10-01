@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\CandidateLanguageController;
 use App\Http\Controllers\Api\CandidateProfileController;
 use App\Http\Controllers\Api\CandidateSkillController;
 use App\Http\Controllers\Api\CompanyController;
+use App\Http\Controllers\Api\CompanyFollowController;
 use App\Http\Controllers\Api\CvRecommendationController;
 use App\Http\Controllers\Api\CompanyUserController;
 use App\Http\Controllers\Api\ConversationController;
@@ -58,6 +59,7 @@ Route::post('cv-recommendations', [CvRecommendationController::class, 'store']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('jobs/{job}/view-stats', [JobController::class, 'viewStats']);
     Route::get('candidates/{user}', [CandidateController::class, 'show']);
+    Route::post('companies/{company}/logo', [CompanyController::class, 'updateLogo']);
     Route::apiResource('jobs', JobController::class)->except(['index', 'show']);
     Route::apiResource('job-categories', JobCategoryController::class)->except(['index', 'show']);
     Route::apiResource('skills', SkillController::class)->except(['index', 'show']);
@@ -74,6 +76,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('educations', EducationController::class);
     Route::apiResource('experiences', ExperienceController::class);
     Route::apiResource('saved-jobs', SavedJobController::class)->except(['update']);
+    Route::apiResource('company-follows', CompanyFollowController::class)->except(['update']);
     Route::apiResource('job-views', JobViewController::class)->except(['update']);
     Route::apiResource('job-view-stats', JobViewStatsController::class);
     Route::apiResource('notifications', NotificationController::class);

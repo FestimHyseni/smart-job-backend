@@ -3,14 +3,59 @@
 namespace App\Services;
 
 use App\Enums\JobStatus;
+use App\Enums\NotificationType;
 use App\Models\Job;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Model;
 
 class JobService extends BaseCrudService
 {
     protected string $model = Job::class;
 
     protected array $with = ['company', 'category', 'location', 'skills'];
+
+    public function __construct(private readonly NotificationService $notificationService) {}
+
+    public function create(array $data): Model
+    {
+        /** @var Job $job */
+        $job = parent::create($data);
+
+        if ($job->status === JobStatus::Published) {
+            $this->notifyFollowers($job);
+        }
+
+        return $job;
+    }
+
+    public function update(Model $record, array $data): Model
+    {
+        /** @var Job $job */
+        $job = $record;
+        $wasPublished = $job->status === JobStatus::Published;
+
+        $job = parent::update($job, $data);
+
+        if ($job->status === JobStatus::Published && ! $wasPublished) {
+            $this->notifyFollowers($job);
+        }
+
+        return $job;
+    }
+
+    private function notifyFollowers(Job $job): void
+    {
+        $followerIds = $job->company->followers()->pluck('user_id');
+
+        foreach ($followerIds as $userId) {
+            $this->notificationService->notify(
+                $userId,
+                NotificationType::NewJobFromFollowedCompany,
+                'Vend i ri pune',
+                "{$job->company->name} postoi një vend të ri pune: \"{$job->title}\".",
+            );
+        }
+    }
 
     public function search(array $filters, int $perPage = 15): LengthAwarePaginator
     {

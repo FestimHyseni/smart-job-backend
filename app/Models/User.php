@@ -102,6 +102,11 @@ class User extends Authenticatable
         return $this->hasMany(SavedJob::class);
     }
 
+    public function companyFollows(): HasMany
+    {
+        return $this->hasMany(CompanyFollow::class);
+    }
+
     public function notifications(): HasMany
     {
         return $this->hasMany(Notification::class);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Company\StoreCompanyRequest;
 use App\Http\Requests\Company\UpdateCompanyRequest;
+use App\Http\Requests\Company\UploadCompanyLogoRequest;
 use App\Http\Resources\CompanyResource;
 use App\Models\Company;
 use App\Services\CompanyService;
@@ -12,9 +13,7 @@ use Illuminate\Http\JsonResponse;
 
 class CompanyController extends Controller
 {
-    public function __construct(private readonly CompanyService $service)
-    {
-    }
+    public function __construct(private readonly CompanyService $service) {}
 
     public function index(): JsonResponse
     {
@@ -45,5 +44,15 @@ class CompanyController extends Controller
         $this->service->delete($company);
 
         return $this->success(null, 'Company deleted successfully.');
+    }
+
+    public function updateLogo(UploadCompanyLogoRequest $request, Company $company): JsonResponse
+    {
+        $isMember = $company->users()->where('user_id', $request->user()->id)->exists();
+        abort_unless($isMember, 403);
+
+        $company = $this->service->updateLogo($company, $request->file('logo'));
+
+        return $this->success(new CompanyResource($company), 'Company logo updated successfully.');
     }
 }

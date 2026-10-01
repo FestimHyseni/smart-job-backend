@@ -9,4 +9,5 @@ enum NotificationType: string
     case NewApplicationReceived = 'new_application_received';
     case InterviewScheduled = 'interview_scheduled';
     case NewMessage = 'new_message';
+    case NewJobFromFollowedCompany = 'new_job_from_followed_company';
 }
