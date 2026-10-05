@@ -5,6 +5,9 @@ namespace App\Services;
 use App\Enums\JobStatus;
 use App\Enums\NotificationType;
 use App\Models\Job;
+use App\Notifications\NewJobFromFollowedCompany;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 
@@ -45,9 +48,23 @@ class JobService extends BaseCrudService
 
     private function notifyFollowers(Job $job): void
     {
-        $followerIds = $job->company->followers()->pluck('user_id');
+        $followers = $job->company->followers()->with('user')->get();
 
-        foreach ($followerIds as $userId) {
+        foreach ($followers as $follow) {
+            $userId = $follow->user_id;
+
+            if ($follow->user) {
+                try {
+                    $follow->user->notify(new NewJobFromFollowedCompany($job));
+                } catch (Throwable $e) {
+                    Log::error('Failed to send new job email to follower.', [
+                        'job_id' => $job->id,
+                        'user_id' => $userId,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
+            }
+
             $this->notificationService->notify(
                 $userId,
                 NotificationType::NewJobFromFollowedCompany,
