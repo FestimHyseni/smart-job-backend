@@ -18,6 +18,12 @@ class JobCategorySeeder extends Seeder
         'Organizata Joqeveritare (OJQ)', 'Farmaci', 'Ndërtim Inxhinierik', 'Modë & Tekstil',
         'Sport & Argëtim', 'Siguri & Mbrojtje', 'Konsulencë Biznesi', 'Shërbime Publike',
         'Arsim Profesional dhe Trajnime', 'Zejtari & Artizanat',
+        'Zhvillim Softueri', 'Dizajn Grafik dhe UI/UX', 'Siguri Kibernetike', 'Analizë e të Dhënave',
+        'Inxhinieri', 'Shitje dhe Zhvillim Biznesi', 'Fotografi dhe Video',
+        'Bujqësi', 'Edukim', 'Ekonomi', 'Elektronikë dhe Energjetikë', 'Hotelieri', 'Hulumtim dhe Zhvillim',
+        'Inxhinieri dhe Ndërtimtari', 'Juridik', 'Media', 'Menaxhment', 'Mirëmbajtje dhe Sigurim',
+        'Prodhimtari dhe Përpunim', 'Teknologji Informative', 'Transport', 'Burime Njerëzore', 'Logjistikë',
+        'Zeje dhe Zanate', 'Kategori të tjera',
     ];
 
     public function run(): void
